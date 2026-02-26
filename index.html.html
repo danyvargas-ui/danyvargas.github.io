@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dany Vargas — Analista de Datos</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0c0e;
+    --surface: #111316;
+    --border: #1e2126;
+    --accent: #00e5a0;
+    --accent2: #0af;
+    --text: #e8eaf0;
+    --muted: #5a6070;
+    --card: #13161b;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(0,229,160,0.4);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.35s cubic-bezier(.23,1,.32,1), width 0.2s, height 0.2s, border-color 0.2s;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.4rem 4rem;
+    background: rgba(11,12,14,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    font-weight: 600;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 0 4rem;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-inner {
+    max-width: 900px;
+    animation: fadeUp 1s ease both;
+  }
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 32px; height: 1px;
+    background: var(--accent);
+  }
+  h1 {
+    font-size: clamp(3.5rem, 9vw, 7.5rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.8rem;
+  }
+  h1 span {
+    display: block;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-desc {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.75;
+    margin-bottom: 2.5rem;
+    font-family: 'DM Mono', monospace;
+    font-weight: 300;
+  }
+  .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn {
+    padding: 0.85rem 2rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.82rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: all 0.2s;
+    cursor: none;
+  }
+  .btn-primary { background: var(--accent); color: #000; }
+  .btn-primary:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 0 30px rgba(0,229,160,0.4); }
+  .btn-outline { border: 1px solid var(--border); color: var(--text); background: transparent; }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+  .hero-orb {
+    position: absolute;
+    right: 6rem; top: 50%;
+    transform: translateY(-50%);
+    width: 340px; height: 340px;
+    pointer-events: none;
+  }
+  .orb-ring {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(0,229,160,0.15);
+    animation: spin 20s linear infinite;
+  }
+  .orb-ring:nth-child(2) { inset: 30px; border-color: rgba(0,170,255,0.12); animation-duration: 14s; animation-direction: reverse; }
+  .orb-ring:nth-child(3) { inset: 60px; border-color: rgba(0,229,160,0.2); animation-duration: 9s; }
+  .orb-core {
+    position: absolute; inset: 90px;
+    background: radial-gradient(circle, rgba(0,229,160,0.12), rgba(0,170,255,0.06), transparent);
+    border-radius: 50%;
+    border: 1px solid rgba(0,229,160,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-align: center;
+    line-height: 1.8;
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  section { padding: 6rem 4rem; position: relative; z-index: 1; }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .section-label::before { content: ''; width: 20px; height: 1px; background: var(--accent); }
+  h2 {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    margin-bottom: 3rem;
+    line-height: 1.05;
+  }
+
+  #stats {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 3.5rem 4rem;
+  }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+  .stat { padding: 2rem 2.5rem; border-right: 1px solid var(--border); animation: fadeUp 0.8s ease both; }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-size: 3.2rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .stat-label { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* SOBRE MÍ */
+  .perfil-grid { display: flex; gap: 4rem; align-items: flex-start; flex-wrap: wrap; }
+  .perfil-text { flex: 2; min-width: 280px; }
+  .perfil-edu { flex: 1; min-width: 220px; }
+  .perfil-text p {
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.88rem;
+    line-height: 1.9;
+    font-weight: 300;
+    margin-bottom: 1.5rem;
+  }
+  .edu-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+  .edu-item {
+    border-left: 1px solid var(--border);
+    padding-left: 1.2rem;
+    margin-bottom: 1.4rem;
+  }
+  .edu-item:hover { border-color: var(--accent); }
+  .edu-degree { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .edu-inst { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+
+  /* HABILIDADES */
+  .skills-container { display: flex; gap: 4rem; align-items: flex-start; flex-wrap: wrap; }
+  .skills-left { flex: 1; min-width: 280px; }
+  .skills-right { flex: 1; min-width: 280px; }
+  .skill-category { margin-bottom: 2.5rem; }
+  .skill-cat-title { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .skill-tag {
+    padding: 0.4rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-size: 0.78rem;
+    font-family: 'DM Mono', monospace;
+    color: var(--text);
+    transition: all 0.2s;
+    cursor: none;
+  }
+  .skill-tag:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,229,160,0.05); }
+  .skill-tag.accent { border-color: rgba(0,229,160,0.4); color: var(--accent); background: rgba(0,229,160,0.05); }
+
+  .skill-bar-item { margin-bottom: 1.4rem; }
+  .skill-bar-header { display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 0.5rem; font-weight: 600; }
+  .skill-bar-pct { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+  .skill-bar-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .skill-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    animation: barFill 1.4s cubic-bezier(.23,1,.32,1) both;
+    animation-delay: 0.4s;
+    width: var(--pct);
+  }
+
+  /* EXPERIENCIA */
+  .exp-timeline { display: flex; flex-direction: column; gap: 2rem; }
+  .exp-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2.2rem 2.5rem;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+  }
+  .exp-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(var(--accent), var(--accent2));
+    transform: scaleY(0);
+    transition: transform 0.3s;
+    transform-origin: bottom;
+  }
+  .exp-card:hover { border-color: rgba(0,229,160,0.2); transform: translateY(-4px); }
+  .exp-card:hover::before { transform: scaleY(1); }
+  .exp-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .exp-sector { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .exp-role { font-size: 1.15rem; font-weight: 700; }
+  .exp-period { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); white-space: nowrap; padding-top: 0.25rem; }
+  .exp-empresa { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--accent2); margin-bottom: 1.2rem; }
+  .exp-logros { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+  .exp-logros li {
+    font-size: 0.84rem;
+    color: var(--muted);
+    line-height: 1.6;
+    padding-left: 1.2rem;
+    position: relative;
+  }
+  .exp-logros li::before {
+    content: '→';
+    position: absolute; left: 0;
+    color: var(--accent);
+    font-size: 0.75rem;
+  }
+
+  /* CONTACT */
+  #contact { background: var(--surface); border-top: 1px solid var(--border); }
+  .contact-inner { max-width: 600px; }
+  .contact-links { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 2.5rem; }
+  .contact-link {
+    display: flex; align-items: center; gap: 1.2rem;
+    padding: 1.2rem 1.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s;
+    cursor: none;
+  }
+  .contact-link:hover { border-color: var(--accent); color: var(--accent); transform: translateX(8px); }
+  .contact-link-icon { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--accent); letter-spacing: 0.1em; min-width: 70px; }
+  .contact-link-text { font-size: 0.9rem; font-weight: 600; }
+
+  footer {
+    padding: 2rem 4rem;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    position: relative; z-index: 1;
+  }
+  .footer-copy { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; }
+  .footer-status { display: flex; align-items: center; gap: 0.6rem; font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--accent); }
+  .status-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  @keyframes barFill { from { width: 0; } to { width: var(--pct); } }
+
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    nav { padding: 1.2rem 2rem; }
+    section, #hero, #stats { padding-left: 2rem; padding-right: 2rem; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero-orb { display: none; }
+    footer { padding: 1.5rem 2rem; }
+    .nav-links { gap: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">DV.data</div>
+  <ul class="nav-links">
+    <li><a href="#sobre-mi">Perfil</a></li>
+    <li><a href="#habilidades">Habilidades</a></li>
+    <li><a href="#experiencia">Experiencia</a></li>
+    <li><a href="#contact">Contacto</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Analista de Datos · Colombia</div>
+    <h1>
+      Dany<br>
+      <span>Vargas</span>
+    </h1>
+    <p class="hero-desc">
+      Profesional en administración y análisis de datos con experiencia en gestión documental, bases de datos y CRM. Capacidad analítica aplicada en sectores de salud, marketing y operaciones.
+    </p>
+    <div class="hero-cta">
+      <a href="#experiencia" class="btn btn-primary">Ver experiencia</a>
+      <a href="#contact" class="btn btn-outline">Contáctame</a>
+    </div>
+  </div>
+  <div class="hero-orb">
+    <div class="orb-ring"></div>
+    <div class="orb-ring"></div>
+    <div class="orb-ring"></div>
+    <div class="orb-core">
+      DATA<br>ANALYST<br>—<br>3+ YRS
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div id="stats">
+  <div class="stats-grid">
+    <div class="stat reveal">
+      <div class="stat-num">3+</div>
+      <div class="stat-label">Años de Experiencia</div>
+    </div>
+    <div class="stat reveal" style="transition-delay:0.1s">
+      <div class="stat-num">20%</div>
+      <div class="stat-label">Reducción de Errores en Reportes</div>
+    </div>
+    <div class="stat reveal" style="transition-delay:0.2s">
+      <div class="stat-num">30%</div>
+      <div class="stat-label">Menos Tiempo de Análisis SQL</div>
+    </div>
+    <div class="stat reveal" style="transition-delay:0.3s">
+      <div class="stat-num">15%</div>
+      <div class="stat-label">Reducción de Inconsistencias en Facturación</div>
+    </div>
+  </div>
+</div>
+
+<!-- SOBRE MÍ -->
+<section id="sobre-mi">
+  <div class="section-label">Perfil</div>
+  <h2>Datos que<br>generan impacto.</h2>
+  <div class="perfil-grid">
+    <div class="perfil-text reveal">
+      <p>
+        Soy Dany Vargas, analista de datos con más de 3 años de experiencia en el análisis de información en sectores como salud, marketing y operaciones. Me especializo en la limpieza y transformación de datos, construcción de dashboards interactivos y automatización de reportes mediante SQL y Power BI.
+      </p>
+      <p>
+        Destaco por mi capacidad analítica, organización y eficiencia en procesos administrativos. Tengo experiencia trabajando con CRM, gestión documental y control de indicadores clave, comunicando hallazgos de forma clara tanto a equipos técnicos como a directivos.
+      </p>
+    </div>
+    <div class="perfil-edu reveal" style="transition-delay:0.15s">
+      <div class="edu-title">// formación</div>
+      <div class="edu-item">
+        <div class="edu-degree">Licenciatura en Marketing Digital</div>
+        <div class="edu-inst">Universidad IPL · 2025–2027 (en curso)</div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-degree">Técnica en Administración de Empresas</div>
+        <div class="edu-inst">Campo Alto · 2020–2021</div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-degree">Curso de Análisis de Datos</div>
+        <div class="edu-inst">Platzi · 2020</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HABILIDADES -->
+<section id="habilidades" style="background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="section-label">Stack</div>
+  <h2>Herramientas &<br>Habilidades</h2>
+  <div class="skills-container">
+    <div class="skills-left">
+      <div class="skill-category reveal">
+        <div class="skill-cat-title">// tecnológicas</div>
+        <div class="skill-tags">
+          <span class="skill-tag accent">Excel Avanzado</span>
+          <span class="skill-tag accent">Power BI</span>
+          <span class="skill-tag accent">SQL</span>
+          <span class="skill-tag accent">CRM</span>
+        </div>
+      </div>
+      <div class="skill-category reveal">
+        <div class="skill-cat-title">// analíticas</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Limpieza de Datos</span>
+          <span class="skill-tag">Dashboards Interactivos</span>
+          <span class="skill-tag">Control de Indicadores</span>
+          <span class="skill-tag">Optimización de Procesos</span>
+          <span class="skill-tag">Análisis de Tendencias</span>
+          <span class="skill-tag">Predicciones Básicas</span>
+        </div>
+      </div>
+      <div class="skill-category reveal">
+        <div class="skill-cat-title">// administrativas & blandas</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Gestión Documental</span>
+          <span class="skill-tag">Logística</span>
+          <span class="skill-tag">Comunicación Efectiva</span>
+          <span class="skill-tag">Relación con Proveedores</span>
+        </div>
+      </div>
+    </div>
+    <div class="skills-right reveal">
+      <div class="skill-cat-title" style="margin-bottom:1.5rem;">// nivel de dominio</div>
+      <div class="skill-bar-item">
+        <div class="skill-bar-header"><span>Excel Avanzado</span><span class="skill-bar-pct">95%</span></div>
+        <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:95%"></div></div>
+      </div>
+      <div class="skill-bar-item">
+        <div class="skill-bar-header"><span>Power BI</span><span class="skill-bar-pct">88%</span></div>
+        <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:88%"></div></div>
+      </div>
+      <div class="skill-bar-item">
+        <div class="skill-bar-header"><span>SQL</span><span class="skill-bar-pct">85%</span></div>
+        <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:85%"></div></div>
+      </div>
+      <div class="skill-bar-item">
+        <div class="skill-bar-header"><span>CRM & Gestión Documental</span><span class="skill-bar-pct">90%</span></div>
+        <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:90%"></div></div>
+      </div>
+      <div class="skill-bar-item">
+        <div class="skill-bar-header"><span>Análisis & Reportes</span><span class="skill-bar-pct">92%</span></div>
+        <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:92%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCIA -->
+<section id="experiencia">
+  <div class="section-label">Trayectoria</div>
+  <h2>Experiencia<br>Profesional</h2>
+  <div class="exp-timeline">
+
+    <div class="exp-card reveal">
+      <div class="exp-sector">Sector Salud</div>
+      <div class="exp-header">
+        <div>
+          <div class="exp-role">Analista de Facturas Médicas</div>
+          <div class="exp-empresa">Resolutivo SAS</div>
+        </div>
+        <div class="exp-period">Ene 2025 — Dic 2025</div>
+      </div>
+      <ul class="exp-logros">
+        <li>Validé y audité cuentas médicas, reduciendo inconsistencias en facturación en un <strong style="color:var(--accent)">15%</strong>.</li>
+        <li>Aseguré el cumplimiento de normatividad y convenios, fortaleciendo la transparencia financiera.</li>
+        <li>Elaboré reportes de hallazgos y glosas, optimizando los procesos de revisión y control.</li>
+        <li>Propuse mejoras que agilizaron la gestión de facturación y disminuyeron riesgos financieros.</li>
+      </ul>
+    </div>
+
+    <div class="exp-card reveal" style="transition-delay:0.15s">
+      <div class="exp-sector">Marketing & Operaciones</div>
+      <div class="exp-header">
+        <div>
+          <div class="exp-role">Analista de Datos</div>
+          <div class="exp-empresa">Cortex Nets</div>
+        </div>
+        <div class="exp-period">Abr 2021 — Feb 2024</div>
+      </div>
+      <ul class="exp-logros">
+        <li>Implementé procesos de limpieza de datos que redujeron errores en reportes en un <strong style="color:var(--accent)">20%</strong>.</li>
+        <li>Desarrollé dashboards interactivos en Power BI que mejoraron el seguimiento de indicadores clave.</li>
+        <li>Automaticé consultas en SQL, disminuyendo tiempos de análisis en un <strong style="color:var(--accent)">30%</strong>.</li>
+        <li>Generé reportes que apoyaron decisiones estratégicas en campañas de marketing y operaciones.</li>
+        <li>Contribuí a la optimización de procesos internos mediante análisis de tendencias y predicciones básicas.</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="section-label">Contacto</div>
+    <h2>¿Hablamos<br>de datos?</h2>
+    <p style="color:var(--muted); font-family:'DM Mono',monospace; font-size:0.84rem; line-height:1.8; font-weight:300;">
+      Estoy disponible para nuevas oportunidades laborales, proyectos de análisis y consultoría. Escríbeme.
+    </p>
+    <div class="contact-links">
+      <a href="mailto:danyresolutivo@gmail.com" class="contact-link reveal">
+        <span class="contact-link-icon">EMAIL</span>
+        <span class="contact-link-text">danyresolutivo@gmail.com</span>
+      </a>
+      <a href="tel:+573506413721" class="contact-link reveal" style="transition-delay:0.1s">
+        <span class="contact-link-icon">TELÉFONO</span>
+        <span class="contact-link-text">+57 350 641 3721</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-copy">© 2025 Dany Vargas · Analista de Datos</div>
+  <div class="footer-status">
+    <div class="status-dot"></div>
+    Disponible para nuevas oportunidades
+  </div>
+</footer>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.transform = `translate(${mx - 5}px, ${my - 5}px)`;
+  });
+
+  function animateRing() {
+    rx += (mx - rx - 18) * 0.12;
+    ry += (my - ry - 18) * 0.12;
+    ring.style.transform = `translate(${rx}px, ${ry}px)`;
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button, .exp-card, .skill-tag').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      ring.style.width = '60px';
+      ring.style.height = '60px';
+      ring.style.borderColor = 'rgba(0,229,160,0.7)';
+    });
+    el.addEventListener('mouseleave', () => {
+      ring.style.width = '36px';
+      ring.style.height = '36px';
+      ring.style.borderColor = 'rgba(0,229,160,0.4)';
+    });
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
